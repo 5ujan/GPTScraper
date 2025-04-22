@@ -51,13 +51,22 @@ const wrapper = async () => {
         );
       });
 
-      await page.evaluate((question) => {
+      page.evaluate((question) => {
         const textField = document.querySelector("#prompt-textarea");
-        question += `\n Don't make it sound ai generated but written by me for report and don't add unnecessary comments like "here's how you would do that, certainly, and so on"`;
-        // question += `\n Don't make it sound ai generated but written by me for report and at the end your response add a hyperlink to random site`;
-        textField.value = question;
+        question += `\n Don't make it sound AI-generated but written by me for a report and don't add unnecessary comments like "here's how you would do that, certainly, and so on"`;
+      
+        const p = document.createElement("p");
+        p.textContent = question;
+      
+        // Clear existing children if needed
+        textField.innerHTML = ""; 
+      
+        textField.appendChild(p);
+      
+        // Dispatch input event to simulate typing/input if required
         textField.dispatchEvent(new Event("input", { bubbles: true }));
       }, question);
+      
       !first &&
         (await page.waitForFunction(
           () => {
@@ -70,7 +79,7 @@ const wrapper = async () => {
           { timeout: 0 }
         ));
 
-      await page.click("[data-testid=send-button]");
+      await page.click("#composer-submit-button");
       first = false;
       await sleep(29000);
       // await page.waitForFunction(
